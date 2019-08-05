@@ -9,7 +9,7 @@
  * @returns {object} Response Object. http://docs.couchdb.org/en/latest/json-structure.html#response-object
  **/
 import "../polyfills"
-import Hello from "../components/Hello.svelte"
+import Hello from "../components/App.svelte"
 import page from "../page"
 import { search } from "../jmespath"
 
