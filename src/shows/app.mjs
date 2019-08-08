@@ -11,9 +11,6 @@
 import "../polyfills"
 import Hello from "../components/App.svelte"
 import page from "../page"
-import { search } from "../jmespath"
-
-const name = search({ foo: { bar: 'jaye' } }, 'foo.bar')
 
 export default (doc, req) => {
     provides('html', () => {
@@ -22,4 +19,13 @@ export default (doc, req) => {
         });
         return page(head, css.code, html, `<script>doc = ${doc}</script>`)
     });
+    provides('json', () => {
+        return {
+            'headers': { 'Content-Type': 'application/json' },
+            'body': JSON.stringify({
+                component: 'Hello',
+                doc
+            })
+        }
+    })
 }

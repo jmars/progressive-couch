@@ -55,7 +55,11 @@ self.addEventListener('install', event => {
 let handler
 page('*/:design/_show/:show/:doc?', (ctx, next) => {
   const { design, show, doc } = ctx.params
-  handler = ldb.show(`${design}/${show}/${doc}`).then(res => {
+  handler = request => ldb.show(`${design}/${show}/${doc}`, {
+    headers: {
+      'Accept': request.headers.get('Accept')
+    }
+  }).then(res => {
     const { body, headers } = res
     return new Response(body, { headers })
   })
@@ -71,7 +75,7 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url)
   page(url.pathname)
   if (handler) {
-    event.respondWith(handler.then(res => {
+    event.respondWith(handler(request).then(res => {
       handler = null
       return res
     }))

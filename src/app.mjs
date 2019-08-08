@@ -1,4 +1,9 @@
 import Hello from "./components/App.svelte"
+import page from 'page'
+
+const Components = {
+  Hello
+}
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -12,12 +17,27 @@ if ('serviceWorker' in navigator) {
   })
 }
 
-const app = new Hello({
-  target: document.body,
-  hydrate: true,
-  props: {
-    name: 'client'
-  }
+page('*/:design/_show/:show/:doc?', ctx => {
+  const { design, show } = ctx.params
+  fetch(ctx.path, {
+    headers: {
+      'Accept': 'application/json; charset=utf-8',
+      'Accept-Encoding': 'identity'
+    }
+  }).then(res => {
+    return res.json()
+  })
+  .then(({doc, component}) => {
+    new Components[component]({
+      target: document.body,
+      hydrate: true,
+      props: {
+        name: 'client'
+      }
+    })
+  })
 })
 
-export default app
+page()
+
+export default () => {}
