@@ -1,9 +1,5 @@
-import Hello from "./components/App.svelte"
+import { shows } from "./skeleton/index"
 import page from 'page'
-
-const Components = {
-  Hello
-}
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -19,25 +15,13 @@ if ('serviceWorker' in navigator) {
 
 page('*/:design/_show/:show/:doc?', ctx => {
   const { design, show } = ctx.params
-  fetch(ctx.path, {
-    headers: {
-      'Accept': 'application/json; charset=utf-8',
-      'Accept-Encoding': 'identity'
-    }
-  }).then(res => {
-    return res.json()
-  })
-  .then(({doc, component}) => {
-    new Components[component]({
-      target: document.body,
-      hydrate: true,
-      props: {
-        name: 'client'
-      }
-    })
+  new shows[show]({
+    target: document.body,
+    hydrate: true,
+    props: {}
   })
 })
 
-page()
-
-export default () => {}
+export default () => {
+  page()
+}

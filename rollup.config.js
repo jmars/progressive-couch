@@ -59,11 +59,19 @@ const plugins = [
 
 export default [
 	{
-		input: ['src/app.mjs'],
+		input: ['src/init.mjs'],
 		output: {
 			format: 'iife',
-			name: 'app',
-			file: '_attachments/bundle.js'
+			name: 'init',
+			file: '_attachments/init.js'
+		},
+		plugins
+	},
+	{
+		input: ['src/app.mjs'],
+		output: {
+			format: 'system',
+			dir: '_attachments'
 		},
 		plugins
 	},

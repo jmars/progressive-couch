@@ -23,12 +23,14 @@
     "start:dev": "sirv public --dev"
   },
   "dependencies": {
+    "oboe": "^2.1.4",
     "page": "^1.11.4",
     "pouchdb-browser": "^7.1.1",
     "pouchdb-list": "^4.1.0",
     "pouchdb-rewrite": "^4.1.0",
     "pouchdb-show": "^4.1.0",
     "pouchdb-update": "^4.1.0",
-    "pouchdb-validation": "^4.1.0"
+    "pouchdb-validation": "^4.1.0",
+    "systemjs": "^5.0.0"
   }
 }

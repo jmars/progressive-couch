@@ -15,14 +15,15 @@ PouchDB.plugin(PValidate)
 const CACHE_NAME = 'foxtrot-cache-v1'
 
 const urlsToCache = [
-  'bundle.js',
+  'app.js',
   'bundle.css'
 ]
 
 let ldb
+let rdb
 const activateDb = () => {
   ldb = new PouchDB('foxtrot')
-  const rdb = new PouchDB('http://localhost:5984/foxtrot')
+  rdb = new PouchDB('http://localhost:5984/foxtrot')
   ldb.replicate.from(rdb, {
     live: true,
     retry: true
@@ -45,10 +46,13 @@ self.addEventListener('install', event => {
   console.log('install')
   activateDb()
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    rdb.get('_design/codename-foxtrot').then(design => {
+      const _attachments = Object.keys(design._attachments);
+      return caches.open(CACHE_NAME)
       .then(cache => {
-        return cache.addAll(urlsToCache)
+        return cache.addAll(_attachments)
       })
+    })
   )
 })
 

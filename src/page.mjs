@@ -10,6 +10,6 @@ export default (head, css, html, includes) => `
 <body>
     ${html}
     ${includes}
-    <script src="../bundle.js"></script>
+    <script src="../init.js"></script>
 </body>
 </html>`
