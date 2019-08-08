@@ -44,9 +44,7 @@ const plugins = [
 	svelte({
 		hydratable: true,
 		dev: false,
-		css: css => {
-			css.write('_attachments/bundle.css', false);
-		}
+		css: css => {}
 	}),
 	builtins(),
 	resolve({
