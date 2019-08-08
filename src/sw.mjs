@@ -1,4 +1,15 @@
 import PouchDB from 'pouchdb-browser'
+import PList from 'pouchdb-list'
+import PRewrite from 'pouchdb-rewrite'
+import PShow from 'pouchdb-show'
+import PUpdate from 'pouchdb-update'
+import PValidate from 'pouchdb-validation'
+
+PouchDB.plugin(PList)
+PouchDB.plugin(PRewrite)
+PouchDB.plugin(PShow)
+PouchDB.plugin(PUpdate)
+PouchDB.plugin(PValidate)
 
 const CACHE_NAME = 'foxtrot-cache-v1'
 
@@ -8,28 +19,41 @@ const urlsToCache = [
   'bundle.css'
 ]
 
+const ldb = new PouchDB('foxtrot')
+const rdb = new PouchDB('http://localhost:5984/foxtrot')
+ldb.replicate.from(rdb, {
+  live: true,
+  retry: true
+}).on('change', change => {
+  console.log('change', change)
+  // yo, something changed!
+}).on('paused', info => {
+  console.log('paused', info)
+  // replication was paused, usually because of a lost connection
+}).on('active', info => {
+  console.log('active', info)
+  // replication was resumed
+}).on('error', err => {
+  console.log('error', err)
+  // totally unhandled error (shouldn't happen)
+});
+
 self.addEventListener('install', event => {
   console.log('install')
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Opened cache')
         return cache.addAll(urlsToCache)
       })
   )
 })
 
 self.addEventListener('fetch', event => {
+  console.log('fetch')
+ldb.get('_design/codename-foxtrot').then(doc => {
+  console.log(doc)
+})
   const request = event.request
-  console.log(request.method)
-  console.log(request.url)
-  const entries = request.headers.entries();
-  let next = entries.next()
-  while (!next.done) {
-    const [key, value] = next.value
-    console.log(key, value)
-    next = entries.next()
-  }
   event.respondWith(
     caches.match(event.request)
       .then(response => {
@@ -47,7 +71,6 @@ self.addEventListener('activate', event => {
   console.log('activate')
   event.waitUntil(
     caches.keys().then(cacheNames => {
-      console.log(cacheNames)
       return Promise.all(
         cacheNames.map(cacheName => {
           return caches.delete(cacheName)
