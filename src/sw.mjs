@@ -4,6 +4,7 @@ import PRewrite from 'pouchdb-rewrite'
 import PShow from 'pouchdb-show'
 import PUpdate from 'pouchdb-update'
 import PValidate from 'pouchdb-validation'
+import page from 'page'
 
 PouchDB.plugin(PList)
 PouchDB.plugin(PRewrite)
@@ -18,27 +19,31 @@ const urlsToCache = [
   'bundle.css'
 ]
 
-const ldb = new PouchDB('foxtrot')
-const rdb = new PouchDB('http://localhost:5984/foxtrot')
-ldb.replicate.from(rdb, {
-  live: true,
-  retry: true
-}).on('change', change => {
-  console.log('change', change)
-  // yo, something changed!
-}).on('paused', info => {
-  console.log('paused', info)
-  // replication was paused, usually because of a lost connection
-}).on('active', info => {
-  console.log('active', info)
-  // replication was resumed
-}).on('error', err => {
-  console.log('error', err)
-  // totally unhandled error (shouldn't happen)
-});
+let ldb
+const activateDb = () => {
+  ldb = new PouchDB('foxtrot')
+  const rdb = new PouchDB('http://localhost:5984/foxtrot')
+  ldb.replicate.from(rdb, {
+    live: true,
+    retry: true
+  }).on('change', change => {
+    console.log('change', change)
+    // yo, something changed!
+  }).on('paused', info => {
+    console.log('paused', info)
+    // replication was paused, usually because of a lost connection
+  }).on('active', info => {
+    console.log('active', info)
+    // replication was resumed
+  }).on('error', err => {
+    console.log('error', err)
+    // totally unhandled error (shouldn't happen)
+  });
+}
 
 self.addEventListener('install', event => {
   console.log('install')
+  activateDb()
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
@@ -47,18 +52,29 @@ self.addEventListener('install', event => {
   )
 })
 
+let handler
+page('*/:design/_show/:show/:doc?', (ctx, next) => {
+  const { design, show, doc } = ctx.params
+  handler = ldb.show(`${design}/${show}/${doc}`).then(res => {
+    const { body, headers } = res
+    return new Response(body, { headers })
+  })
+  next()
+})
+
 self.addEventListener('fetch', event => {
-  console.log('fetch')
+  console.log('fetch ')
+  if (!ldb) {
+    activateDb()
+  }
   const request = event.request
   const url = new URL(request.url)
-  if (url.pathname.includes('_show')) {
-    const show = url.pathname.split('_show/')[1].split('/')[0]
-    event.respondWith(
-      ldb.show(`codename-foxtrot/${show}`).then(res => {
-        const { body, headers } = res
-        return new Response(body, { headers })
-      })
-    )
+  page(url.pathname)
+  if (handler) {
+    event.respondWith(handler.then(res => {
+      handler = null
+      return res
+    }))
     console.log('run show')
     return
   }
@@ -76,6 +92,7 @@ self.addEventListener('fetch', event => {
 })
 
 self.addEventListener('activate', event => {
+  activateDb()
   console.log('activate')
   event.waitUntil(
     caches.keys().then(cacheNames => {

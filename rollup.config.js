@@ -26,7 +26,7 @@ const couchPlugins = [
 	prepack({
 		couch: true
 	}),
-	//terser()
+	terser()
 ]
 
 const couchModules = shows.map(name => ({
