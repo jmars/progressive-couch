@@ -14,7 +14,6 @@ PouchDB.plugin(PValidate)
 const CACHE_NAME = 'foxtrot-cache-v1'
 
 const urlsToCache = [
-  '_show/app',
   'bundle.js',
   'bundle.css'
 ]
@@ -50,10 +49,19 @@ self.addEventListener('install', event => {
 
 self.addEventListener('fetch', event => {
   console.log('fetch')
-ldb.get('_design/codename-foxtrot').then(doc => {
-  console.log(doc)
-})
   const request = event.request
+  const url = new URL(request.url)
+  if (url.pathname.includes('_show')) {
+    const show = url.pathname.split('_show/')[1].split('/')[0]
+    event.respondWith(
+      ldb.show(`codename-foxtrot/${show}`).then(res => {
+        const { body, headers } = res
+        return new Response(body, { headers })
+      })
+    )
+    console.log('run show')
+    return
+  }
   event.respondWith(
     caches.match(event.request)
       .then(response => {
