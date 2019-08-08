@@ -12,15 +12,9 @@ PouchDB.plugin(PShow)
 PouchDB.plugin(PUpdate)
 PouchDB.plugin(PValidate)
 
-const CACHE_NAME = 'foxtrot-cache-v1'
-
-const urlsToCache = [
-  'app.js',
-  'bundle.css'
-]
-
 let ldb
 let rdb
+let _attachments
 const activateDb = () => {
   ldb = new PouchDB('foxtrot')
   rdb = new PouchDB('http://localhost:5984/foxtrot')
@@ -47,11 +41,11 @@ self.addEventListener('install', event => {
   activateDb()
   event.waitUntil(
     rdb.get('_design/codename-foxtrot').then(design => {
-      const _attachments = Object.keys(design._attachments);
-      return caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(_attachments)
-      })
+      const _attachments = Object.keys(design._attachments)
+      return (caches.open(design._rev)
+        .then(cache => {
+          return cache.addAll(_attachments)
+        }))
     })
   )
 })
@@ -72,13 +66,13 @@ page('*/:design/_show/:show/:doc?', (ctx, next) => {
 
 self.addEventListener('fetch', event => {
   console.log('fetch ')
-  if (!ldb) {
-    activateDb()
-  }
   const request = event.request
   const url = new URL(request.url)
   page(url.pathname)
   if (handler) {
+    if (!ldb) {
+      activateDb()
+    }
     event.respondWith(handler(request).then(res => {
       handler = null
       return res
@@ -103,12 +97,17 @@ self.addEventListener('activate', event => {
   activateDb()
   console.log('activate')
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          return caches.delete(cacheName)
-        })
-      )
+    rdb.get('_design/codename-foxtrot').then(design => {
+      const _rev = design._rev
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            if (cacheName !== _rev) {
+              return caches.delete(cacheName)
+            }
+          })
+        )
+      })
     })
   )
 })
