@@ -12,14 +12,15 @@ import "../polyfills"
 import Hello from "../components/shows/app.svelte"
 import page from "../page"
 
-export default (doc, req) => {
-    provides('html', () => {
+export default function (doc, req, ...args) {
+    const p = this.provides ? (...args) => this.provides(...args) : provides
+    p('html', () => {
         const { html, css, head } = Hello.render({
             name: req.query.name || "world"
         });
         return page(head, css.code, html, `<script>doc = ${doc}</script>`)
     });
-    provides('json', () => {
+    p('json', () => {
         return {
             'headers': { 'Content-Type': 'application/json' },
             'body': JSON.stringify({

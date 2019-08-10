@@ -7,6 +7,7 @@ import { terser } from 'rollup-plugin-terser'
 import globals from 'rollup-plugin-node-globals'
 import builtins from 'rollup-plugin-node-builtins'
 import fs from 'fs'
+import csso from 'csso'
 
 const shows = fs.readdirSync('./src/shows').filter(name => name.includes(".mjs"))
 
@@ -18,7 +19,7 @@ const couchPlugins = [
 		hydratable: true,
 		dev: false,
 		css: css => {
-			css.write('_attachments/bundle.css', false);
+			//css.write('_attachments/bundle.css', false);
 		}
 	}),
 	resolve(),
@@ -26,7 +27,7 @@ const couchPlugins = [
 	prepack({
 		couch: true
 	}),
-	terser()
+	// terser()
 ]
 
 const couchModules = shows.map(name => ({
@@ -44,7 +45,11 @@ const plugins = [
 	svelte({
 		hydratable: true,
 		dev: false,
-		css: css => {}
+		css: css => {
+			const optimized = csso.minify(css.code).css
+			css.code = optimized
+			css.write('_attachments/bundle.css', false)
+		}
 	}),
 	builtins(),
 	resolve({
@@ -54,7 +59,7 @@ const plugins = [
 	commonjs(),
 	globals(),
 	buble(),
-	terser()
+	// terser()
 ]
 
 export default [

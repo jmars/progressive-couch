@@ -23,6 +23,8 @@
     "start:dev": "sirv public --dev"
   },
   "dependencies": {
+    "couchdb-objects": "^4.1.0",
+    "csso": "^3.5.1",
     "oboe": "^2.1.4",
     "page": "^1.11.4",
     "pouchdb-browser": "^7.1.1",

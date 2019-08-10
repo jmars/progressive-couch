@@ -6,6 +6,8 @@ import PUpdate from 'pouchdb-update'
 import PValidate from 'pouchdb-validation'
 import page from 'page'
 
+const REVISION = 146
+
 PouchDB.plugin(PList)
 PouchDB.plugin(PRewrite)
 PouchDB.plugin(PShow)
@@ -22,22 +24,18 @@ const activateDb = () => {
     live: true,
     retry: true
   }).on('change', change => {
-    console.log('change', change)
     // yo, something changed!
   }).on('paused', info => {
-    console.log('paused', info)
     // replication was paused, usually because of a lost connection
   }).on('active', info => {
-    console.log('active', info)
     // replication was resumed
   }).on('error', err => {
-    console.log('error', err)
     // totally unhandled error (shouldn't happen)
   });
 }
 
 self.addEventListener('install', event => {
-  console.log('install')
+  console.log('install revision', REVISION)
   activateDb()
   event.waitUntil(
     rdb.get('_design/codename-foxtrot').then(design => {
@@ -53,6 +51,7 @@ self.addEventListener('install', event => {
 let handler
 page('*/:design/_show/:show/:doc?', (ctx, next) => {
   const { design, show, doc } = ctx.params
+  // TODO: use rdb in cloudflare workers
   handler = request => ldb.show(`${design}/${show}/${doc}`, {
     headers: {
       'Accept': request.headers.get('Accept')
@@ -65,19 +64,17 @@ page('*/:design/_show/:show/:doc?', (ctx, next) => {
 })
 
 self.addEventListener('fetch', event => {
-  console.log('fetch ')
   const request = event.request
   const url = new URL(request.url)
   page(url.pathname)
   if (handler) {
-    if (!ldb) {
+    if (!ldb || !rdb) {
       activateDb()
     }
     event.respondWith(handler(request).then(res => {
       handler = null
       return res
     }))
-    console.log('run show')
     return
   }
   event.respondWith(
@@ -95,7 +92,6 @@ self.addEventListener('fetch', event => {
 
 self.addEventListener('activate', event => {
   activateDb()
-  console.log('activate')
   event.waitUntil(
     rdb.get('_design/codename-foxtrot').then(design => {
       const _rev = design._rev
