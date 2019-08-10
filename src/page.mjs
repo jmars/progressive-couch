@@ -1,4 +1,4 @@
-export default (head, css, html, includes) => `
+export default (head, css, html) => `
 <!doctype html>
 <html ⚡>
 <head>
@@ -9,7 +9,6 @@ export default (head, css, html, includes) => `
 </head>
 <body>
     ${html}
-    ${includes}
-    <script src="../init.js"></script>
+    <script async src="../init.js"></script>
 </body>
 </html>`

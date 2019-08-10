@@ -13,7 +13,7 @@
       const word = Math.floor(Math.random() * (+6 - +3)) + +3
       const size = Math.floor(word * (lineHeight / 2))
       words.push(size)
-      w += size
+      w += size + 10
       if ((width - w) < (6 * (lineHeight / 2))) {
         break
       }
@@ -38,7 +38,7 @@
     background-color: gray;
     animation: pulse 2s infinite;
     font-size: 0;
-    margin-right: 5px;
+    margin-right: 10px;
     display: inline-block;
   }
 
