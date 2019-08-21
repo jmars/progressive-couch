@@ -8,25 +8,24 @@
  *
  * @returns {object} Response Object. http://docs.couchdb.org/en/latest/json-structure.html#response-object
  **/
-import "../polyfills"
-import Hello from "../components/shows/app.svelte"
-import page from "../page"
+import "../../polyfills"
+import Hello from "../client/home.svelte"
+import page from "../../page"
 
 export default function (doc, req, ...args) {
     const p = this.provides ? (...args) => this.provides(...args) : provides
     p('html', () => {
         const { html, css, head } = Hello.render({
-            name: req.query.name || "world"
+            doc,
+            ssr: true,
+            query: req.query
         });
-        return page(head, css.code, html, `<script>doc = ${doc}</script>`)
+        return page(head, html)
     });
     p('json', () => {
         return {
             'headers': { 'Content-Type': 'application/json' },
-            'body': JSON.stringify({
-                component: 'Hello',
-                doc
-            })
+            'body': JSON.stringify(doc)
         }
     })
 }

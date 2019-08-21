@@ -3,17 +3,28 @@
   "version": "1.0.0",
   "devDependencies": {
     "npm-run-all": "4.1.5",
-    "rollup": "1.17.0",
+    "rollup": "1.19.4",
     "rollup-plugin-buble": "0.19.8",
     "rollup-plugin-commonjs": "10.0.1",
     "rollup-plugin-node-resolve": "5.2.0",
     "rollup-plugin-svelte": "5.1.0",
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-node-globals": "^1.4.0",
-    "rollup-plugin-terser": "^5.0.0",
+    "rollup-plugin-node-builtins": "2.1.2",
+    "rollup-plugin-node-globals": "1.4.0",
+    "rollup-plugin-terser": "5.1.1",
     "prepack": "0.2.54",
     "sirv-cli": "0.4.4",
-    "svelte": "3.6.10"
+    "svelte": "3.9.0",
+    "css-tree": "1.0.0-alpha.34",
+    "csso": "3.5.1",
+    "oboe": "2.1.4",
+    "page": "1.11.4",
+    "pouchdb-browser": "7.1.1",
+    "pouchdb-list": "4.1.0",
+    "pouchdb-rewrite": "4.1.0",
+    "pouchdb-show": "4.1.0",
+    "pouchdb-update": "4.1.0",
+    "pouchdb-validation": "4.1.0",
+    "systemjs": "5.0.0"
   },
   "scripts": {
     "build": "rollup -c",
@@ -21,18 +32,5 @@
     "dev": "run-p start:dev autobuild",
     "start": "sirv public",
     "start:dev": "sirv public --dev"
-  },
-  "dependencies": {
-    "couchdb-objects": "^4.1.0",
-    "csso": "^3.5.1",
-    "oboe": "^2.1.4",
-    "page": "^1.11.4",
-    "pouchdb-browser": "^7.1.1",
-    "pouchdb-list": "^4.1.0",
-    "pouchdb-rewrite": "^4.1.0",
-    "pouchdb-show": "^4.1.0",
-    "pouchdb-update": "^4.1.0",
-    "pouchdb-validation": "^4.1.0",
-    "systemjs": "^5.0.0"
   }
 }

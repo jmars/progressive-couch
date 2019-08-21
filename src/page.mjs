@@ -1,4 +1,4 @@
-export default (head, css, html) => `
+export default (head, html) => `
 <!doctype html>
 <html ⚡>
 <head>
@@ -6,9 +6,9 @@ export default (head, css, html) => `
     <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
     ${head}
     <link rel="stylesheet" type="text/css" href="../bundle.css">
+    <script src="../init.js"></script>
 </head>
 <body>
     ${html}
-    <script async src="../init.js"></script>
 </body>
 </html>`

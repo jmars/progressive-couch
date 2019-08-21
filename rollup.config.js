@@ -9,7 +9,7 @@ import builtins from 'rollup-plugin-node-builtins'
 import fs from 'fs'
 import csso from 'csso'
 
-const shows = fs.readdirSync('./src/shows').filter(name => name.includes(".mjs"))
+const shows = fs.readdirSync('./src/shows/server').filter(name => name.includes(".mjs"))
 
 const production = true
 
@@ -31,7 +31,7 @@ const couchPlugins = [
 ]
 
 const couchModules = shows.map(name => ({
-	input: [`src/shows/${name}`],
+	input: [`src/shows/server/${name}`],
 	output: {
 		format: 'iife',
 		file: `shows/${name.replace('.mjs', '.js')}`,
@@ -86,6 +86,14 @@ export default [
 			format: 'iife',
 			name: 'sw',
 			file: '_attachments/sw.js'
+		},
+		plugins
+	},
+	{
+		input: shows.map(name => `src/shows/client/${name.replace('mjs', 'svelte')}`),
+		output: {
+			format: 'system',
+			dir: '_attachments'
 		},
 		plugins
 	},

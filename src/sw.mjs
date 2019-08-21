@@ -6,7 +6,7 @@ import PUpdate from 'pouchdb-update'
 import PValidate from 'pouchdb-validation'
 import page from 'page'
 
-const REVISION = 149
+const REVISION = 153
 
 PouchDB.plugin(PList)
 PouchDB.plugin(PRewrite)
