@@ -6,7 +6,7 @@ import PUpdate from 'pouchdb-update'
 import PValidate from 'pouchdb-validation'
 import page from 'page'
 
-const REVISION = 153
+const REVISION = 154
 
 PouchDB.plugin(PList)
 PouchDB.plugin(PRewrite)
@@ -51,7 +51,6 @@ self.addEventListener('install', event => {
 let handler
 page('*/:design/_show/:show/:doc?', (ctx, next) => {
   const { design, show, doc } = ctx.params
-  // TODO: use rdb in cloudflare workers
   handler = request => ldb.show(`${design}/${show}/${doc}`, {
     headers: {
       'Accept': request.headers.get('Accept')
