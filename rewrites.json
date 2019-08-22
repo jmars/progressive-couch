@@ -1,0 +1,37 @@
+[
+  {
+    "method": "GET",
+    "from": "",
+    "to": "/_show/home"
+  },
+  {
+    "method": "GET",
+    "from": "static/*",
+    "to": "/*"
+  },
+  {
+    "method": "GET",
+    "from": "sw.js",
+    "to": "/sw.js"
+  },
+  {
+    "method": "GET",
+    "from": "show/:show/*",
+    "to": "/_show/:show/*"
+  },
+  {
+    "method": "GET",
+    "from": "db/*",
+    "to": "../../*"
+  },
+  {
+    "method": "HEAD",
+    "from": "db/*",
+    "to": "../../*"
+  },
+  {
+    "method": "POST",
+    "from": "db/_all_docs",
+    "to": "../../_all_docs"
+  }
+]

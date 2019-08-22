@@ -1,16 +1,26 @@
 import page from 'page'
 import oboe from "oboe"
 
-page('*/:design/_show/:show/:doc?', ctx => {
+page('/', '/show/home')
+page('/show/:show/:doc?', ctx => {
   const { design, show, doc } = ctx.params
-  const stream = !doc ? null : oboe(doc)
-  System.import(`../${show}`)
+  const o = oboe({
+    url: show,
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json'
+    }
+  })
+  .on('node', (node, path) => {
+    console.log(node, path)
+  })
+  System.import(`/static/${show}.js`)
     .then(({ default: Component }) => {
       const app = new Component({
         target: document.body,
         hydrate: true,
         props: {
-          doc: stream
+          doc: null
         }
       })
     })
