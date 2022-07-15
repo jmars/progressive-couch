@@ -13,7 +13,7 @@
     "rollup-plugin-terser": "5.1.1",
     "prepack": "0.2.54",
     "sirv-cli": "0.4.4",
-    "svelte": "3.9.0",
+    "svelte": "3.49.0",
     "css-tree": "1.0.0-alpha.34",
     "csso": "3.5.1",
     "oboe": "2.1.4",
